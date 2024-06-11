@@ -1,11 +1,71 @@
-const { transactions } = require("../dummyData/data");
-const { Query, Mutation } = require("./user.resolver");
+const Transaction = require("../models/transaction.model");
 
 module.exports = {
-    Query:{
-        transactions:()=>{
-            return transactions
-        }
+  Query: {
+    transactions: async (_, __, context) => {
+      try {
+        if (context.getUser()) throw new Error("Unauthorized");
+        const userId = await context.getUser()._id;
+        const transactions = await Transaction.find({ userId });
+        return transactions;
+      } catch (err) {
+        console.error("Error getting transactions: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
     },
-    Mutation:{}
-}
+    transaction: async (_, { transactionId }, context) => {
+      try {
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) return;
+        return transaction;
+      } catch (err) {
+        console.error("Error getting transaction: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+    },
+  },
+  Mutation: {
+    createTransaction: async (_, { transaction }, context) => {
+      try {
+        const newTransaction = new Transaction({
+          ...transaction,
+          userId: context.getUser()._id,
+        });
+        await newTransaction.save();
+        return newTransaction;
+      } catch (err) {
+        console.error("Error creating transaction: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+    },
+    updateTransaction: async (_, { transaction }) => {
+      try {
+        const updatedTransaction = await Transaction.findByIdAndUpdate(
+          transaction.transactionId,
+          transaction,
+          { new: true }
+        );
+        return updatedTransaction;
+      } catch (err) {
+        console.error("Error getting transaction: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+      try {
+      } catch (err) {
+        console.error("Error getting transaction: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+    },
+    deleteTransaction: async (_, { transactionId }) => {
+      try {
+        const deletedTransaction = await Transaction.findByIdAndDelete(
+          transactionId
+        );
+        return deletedTransaction;
+      } catch (err) {
+        console.error("Error getting transaction: ", err);
+        throw new Error(err.message || "Internal server error");
+      }
+    },
+  },
+};
