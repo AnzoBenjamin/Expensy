@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    },
+  },
   description: {
     type: String,
     required: true,
@@ -34,6 +34,4 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-const Transaction = mongoose.model("Transaction", transactionSchema);
-
-module.export = Transaction;
+export const Transaction = mongoose.model("Transaction", transactionSchema);

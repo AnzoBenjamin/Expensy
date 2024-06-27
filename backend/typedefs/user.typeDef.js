@@ -1,3 +1,4 @@
+const userTypeDef = `#graphql
 type Query {
   authUser: User
   user(userId: ID!): User
@@ -33,3 +34,6 @@ input LoginInput {
   username: String!
   password: String!
 }
+`;
+
+export default userTypeDef;

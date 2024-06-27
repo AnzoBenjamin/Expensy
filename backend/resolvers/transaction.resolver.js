@@ -1,71 +1,74 @@
-const Transaction = require("../models/transaction.model");
+import { Transaction } from "../models/transaction.model.js";
+import { User } from "../models/user.model.js";
 
-module.exports = {
+const transactionResolver = {
   Query: {
     transactions: async (_, __, context) => {
       try {
-        if (context.getUser()) throw new Error("Unauthorized");
+        if (!context.getUser()) throw new Error("Unauthorized");
         const userId = await context.getUser()._id;
+
         const transactions = await Transaction.find({ userId });
         return transactions;
       } catch (err) {
-        console.error("Error getting transactions: ", err);
-        throw new Error(err.message || "Internal server error");
+        console.error("Error getting transactions:", err);
+        throw new Error("Error getting transactions");
       }
     },
-    transaction: async (_, { transactionId }, context) => {
+    transaction: async (_, { transactionId }) => {
       try {
         const transaction = await Transaction.findById(transactionId);
-        if (!transaction) return;
         return transaction;
       } catch (err) {
-        console.error("Error getting transaction: ", err);
-        throw new Error(err.message || "Internal server error");
+        console.error("Error getting transaction:", err);
+        throw new Error("Error getting transaction");
       }
     },
   },
   Mutation: {
-    createTransaction: async (_, { transaction }, context) => {
+    createTransaction: async (_, { input }, context) => {
       try {
+        console.log("Called");
+        console.log(input);
         const newTransaction = new Transaction({
-          ...transaction,
+          ...input,
           userId: context.getUser()._id,
         });
         await newTransaction.save();
         return newTransaction;
       } catch (err) {
-        console.error("Error creating transaction: ", err);
-        throw new Error(err.message || "Internal server error");
+        console.error("Error creating transaction:", err);
+        throw new Error("Error creating transaction");
       }
     },
-    updateTransaction: async (_, { transaction }) => {
+    updateTransaction: async (_, { input }) => {
       try {
         const updatedTransaction = await Transaction.findByIdAndUpdate(
-          transaction.transactionId,
-          transaction,
-          { new: true }
+          input.transactionId,
+          input,
+          {
+            new: true,
+          }
         );
         return updatedTransaction;
       } catch (err) {
-        console.error("Error getting transaction: ", err);
-        throw new Error(err.message || "Internal server error");
-      }
-      try {
-      } catch (err) {
-        console.error("Error getting transaction: ", err);
-        throw new Error(err.message || "Internal server error");
+        console.error("Error updating transaction:", err);
+        throw new Error("Error updating transaction");
       }
     },
     deleteTransaction: async (_, { transactionId }) => {
+      console.log(transactionId);
       try {
         const deletedTransaction = await Transaction.findByIdAndDelete(
           transactionId
         );
         return deletedTransaction;
       } catch (err) {
-        console.error("Error getting transaction: ", err);
-        throw new Error(err.message || "Internal server error");
+        console.error("Error deleting transaction:", err);
+        throw new Error("Error deleting transaction");
       }
     },
   },
 };
+
+export default transactionResolver;

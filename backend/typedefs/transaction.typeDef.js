@@ -1,3 +1,4 @@
+const transactionTypeDef = `#graphql
 type Query{
     transactions: [Transaction]
     transaction(transactionId: ID!): Transaction
@@ -38,4 +39,6 @@ input UpdateTransactionInput{
     date: String
     location: String
 }
+`;
 
+export default transactionTypeDef;

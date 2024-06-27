@@ -1,11 +1,11 @@
-const passport = require("passport");
+import passport from "passport";
 
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
-const User = require("../models/user.model");
-const { GraphQLLocalStrategy } = require("graphql-passport");
+import {User} from "../models/user.model.js";
+import { GraphQLLocalStrategy } from "graphql-passport";
 
-const configurePassport = async () => {
+export const configurePassport = async () => {
   passport.serializeUser((user, done) => {
     console.log("Serializing user");
     done(null, user.id);
@@ -25,7 +25,7 @@ const configurePassport = async () => {
   passport.use(
     new GraphQLLocalStrategy(async (username, password, done) => {
       try {
-        const user = await User.findOne(username);
+        const user = await User.findOne({ username });
         if (!user) {
           throw new Error("Invalid username or password");
         }
@@ -36,11 +36,10 @@ const configurePassport = async () => {
         }
 
         return done(null, user);
-      } catch (error) {
-        return done(error);
+      } catch (err) {
+        return done(err);
       }
     })
   );
 };
 
-module.exports = configurePassport;

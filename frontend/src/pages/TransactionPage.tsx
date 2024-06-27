@@ -1,6 +1,19 @@
-import { useState } from "react";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { GET_TRANSACTION } from "../graphql/queries/transaction.query";
+import { UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import TransactionFormSkeleton from "../components/TransactionFormSkeleton";
 
 const TransactionPage = () => {
+  const { id } = useParams();
+  const { data, loading, error } = useQuery(GET_TRANSACTION, {
+    variables: { transactionId: id },
+  });
+  const [updateTransaction, { loading: loadingUpdate }] =
+    useMutation(UPDATE_TRANSACTION);
+
   const [formData, setFormData] = useState({
     description: "",
     paymentType: "",
@@ -10,19 +23,38 @@ const TransactionPage = () => {
     date: "",
   });
 
+  useEffect(() => {
+    if (!data) return;
+    let { paymentType, category, description, amount, location, date } =
+      data.transaction;
+    date = new Date(+date).toISOString().substr(0, 10);
+    setFormData({ description, paymentType, category, amount, location, date });
+  }, [data]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("formData", formData);
+    try {
+      await updateTransaction({
+        variables: { input: { ...formData, transactionId: id } },
+      });
+      toast.success("Transaction successfully updated");
+    } catch (err) {
+      console.error("Error", err);
+      toast.error(err.message);
+    }
   };
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    if (name === "amount") {
+      value = parseFloat(value);
+    }
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
 
-  // if (loading) return <TransactionFormSkeleton />;
+  if (loading) return <TransactionFormSkeleton />;
 
   return (
     <div className="h-screen max-w-4xl mx-auto flex flex-col items-center">
@@ -47,7 +79,7 @@ const TransactionPage = () => {
               id="description"
               name="description"
               type="text"
-              placeholder="Rent, Groceries, Salary, etc."
+              placeholder={formData.description}
               value={formData.description}
               onChange={handleInputChange}
             />
@@ -130,7 +162,7 @@ const TransactionPage = () => {
               id="amount"
               name="amount"
               type="number"
-              placeholder="150"
+              placeholder={formData.amount}
               value={formData.amount}
               onChange={handleInputChange}
             />
@@ -182,8 +214,9 @@ const TransactionPage = () => {
           className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
           from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600"
           type="submit"
+          disabled={loadingUpdate}
         >
-          Update Transaction
+          {loadingUpdate ? "Loading" : "Update Transaction"}
         </button>
       </form>
     </div>

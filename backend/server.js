@@ -1,22 +1,20 @@
-const http = require("http");
-const cors = require("cors");
-const express = require("express");
-const session = require("express-session");
-const passport = require("passport");
+import http from "http";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import session from "express-session";
+import passport from "passport";
 
-const { connectDB } = require("./db/connectDB");
-const { buildContext } = require("graphql-passport");
-const connectMongo = require("connect-mongodb-session");
-const configurePassport = require("./passport/passport.config");
-const mergedTypeDefs = require("./typedefs");
-const mergedResolvers = require("./resolvers");
-const { ApolloServer } = require("@apollo/server");
-const { expressMiddleware } = require("@apollo/server/express4");
-const {
-  ApolloServerPluginDrainHttpServer,
-} = require("@apollo/server/plugin/drainHttpServer");
+import { connectDB } from "./db/connectDB.js";
+import { buildContext } from "graphql-passport";
+import connectMongo from "connect-mongodb-session";
+import { configurePassport } from "./passport/passport.config.js";
+import mergedTypeDefs from "./typedefs/index.js";
+import mergedResolvers from "./resolvers/index.js";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 
-const dotenv = require("dotenv");
 const app = express();
 dotenv.config();
 configurePassport();
@@ -48,35 +46,32 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-async function startServer() {
-  const server = new ApolloServer({
-    typeDefs: mergedTypeDefs,
-    resolvers: mergedResolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  });
-  await server.start();
-  app.use(
-    "/",
+const server = new ApolloServer({
+  typeDefs: mergedTypeDefs,
+  resolvers: mergedResolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+});
+await server.start();
+app.use(
+  "/",
 
-    cors({
-      origin: "http://localhost:3000",
-      credentials: true,
-    }),
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
 
-    express.json(),
+  express.json(),
 
-    // expressMiddleware accepts the same arguments:
+  // expressMiddleware accepts the same arguments:
 
-    // an Apollo Server instance and optional configuration options
+  // an Apollo Server instance and optional configuration options
 
-    expressMiddleware(server, {
-      context: async ({ req }) => buildContext({ token: req.headers.token }),
-    })
-  );
-  await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
-  await connectDB();
-  console.log(`🚀 Server ready at http://localhost:4000/`);
-}
-startServer();
+  expressMiddleware(server, {
+    context: async ({ req, res }) => buildContext({ req, res }),
+  })
+);
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+await connectDB();
+console.log(`🚀 Server ready at http://localhost:4000/`);
 
 // Modified server startup
