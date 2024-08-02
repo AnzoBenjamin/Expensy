@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
+    "@capacitor/android": "^6.1.1",
+    "@capacitor/cli": "^6.1.1",
+    "@capacitor/core": "^6.1.1",
+    "@capacitor/ios": "^6.1.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "chart.js": "^4.4.1",
     "clsx": "^2.1.0",
