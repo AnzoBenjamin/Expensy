@@ -62,6 +62,17 @@ const server = new ApolloServer({
 	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
+const allowedOrigins = [
+	'http://localhost:3000',  // Web app development
+	'https://your-production-web-app.com',  // Web app production
+	'capacitor://localhost',  // Capacitor local development
+	'http://localhost',
+	'https://localhost',
+	'capacitor://host',
+	'ionic://host'
+	// Add any other specific origins you need
+  ];
+
 // Ensure we wait for our server to start
 await server.start();
 
@@ -70,8 +81,18 @@ await server.start();
 app.use(
 	"/graphql",
 	cors({
-		origin: "*",
-		}),
+		origin: function(origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+		credentials: true,
+	}),
 	express.json(),
 	// expressMiddleware accepts the same arguments:
 	// an Apollo Server instance and optional configuration options
