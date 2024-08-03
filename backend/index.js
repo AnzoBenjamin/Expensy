@@ -65,32 +65,12 @@ const server = new ApolloServer({
 // Ensure we wait for our server to start
 await server.start();
 
-const allowedOrigins = [
-	'http://localhost:3000',  // Web app development
-	'https://your-production-web-app.com',  // Web app production
-	'capacitor://localhost',  // Capacitor local development
-	'http://localhost',
-	'https://localhost',
-	'capacitor://host',
-	'ionic://host'
-	// Add any other specific origins you need
-  ];
-
 // Set up our Express middleware to handle CORS, body parsing,
 // and our expressMiddleware function.
 app.use(
 	"/graphql",
 	cors({
-		origin: function(origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+		origin: "http://localhost:3000",
 		credentials: true,
 	}),
 	express.json(),
@@ -101,6 +81,12 @@ app.use(
 	})
 );
 
+// npm run build will build your frontend app, and it will the optimized version of your app
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "frontend/dist", "index.html"));
+});
 
 // Modified server startup
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
