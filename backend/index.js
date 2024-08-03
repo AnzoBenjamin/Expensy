@@ -62,6 +62,9 @@ const server = new ApolloServer({
 	plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
+// Ensure we wait for our server to start
+await server.start();
+
 const allowedOrigins = [
 	'http://localhost:3000',  // Web app development
 	'https://your-production-web-app.com',  // Web app production
@@ -72,9 +75,6 @@ const allowedOrigins = [
 	'ionic://host'
 	// Add any other specific origins you need
   ];
-
-// Ensure we wait for our server to start
-await server.start();
 
 // Set up our Express middleware to handle CORS, body parsing,
 // and our expressMiddleware function.
