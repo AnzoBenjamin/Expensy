@@ -1,4 +1,4 @@
-package com.expensy.app;
+package com.expensy;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.expensy.app"
+    namespace "com.expensy"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.expensy.app"
+        applicationId "com.expensy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

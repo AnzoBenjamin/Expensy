@@ -1,0 +1,7 @@
+{
+  "name": "expensy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

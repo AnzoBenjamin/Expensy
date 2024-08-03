@@ -70,7 +70,7 @@ await server.start();
 app.use(
 	"/graphql",
 	cors({
-		origin: "http://localhost:3000",
+		origin: "*",
 		credentials: true,
 	}),
 	express.json(),
