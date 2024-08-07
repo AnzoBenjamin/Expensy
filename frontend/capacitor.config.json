@@ -2,5 +2,10 @@
 {
   "appId": "com.expensy",
   "appName": "expensy",
-  "webDir": "dist"
+  "webDir": "dist",
+
+  "server": {
+    "url": "https://expensy-qyjs.onrender.com/",
+    "cleartext": true
+  }
 }
