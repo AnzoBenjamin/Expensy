@@ -11,6 +11,7 @@ import { LOGOUT } from "../graphql/mutations/user.mutation";
 import { GET_TRANSACTION_STATISTICS } from "../graphql/queries/transaction.query";
 import { GET_AUTHENTICATED_USER } from "../graphql/queries/user.query";
 import { useEffect, useState } from "react";
+import { LimitModal } from "../components/LimitModal";
 
 // const chartData = {
 // 	labels: ["Saving", "Expense", "Investment"],
@@ -108,6 +109,7 @@ const HomePage = () => {
 					<p className='md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text'>
 						Spend wisely, track wisely
 					</p>
+					<LimitModal/>
 					<img
 						src={authUserData?.authUser.profilePicture}
 						className='w-11 h-11 rounded-full border cursor-pointer'
