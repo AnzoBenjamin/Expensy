@@ -1,7 +1,6 @@
 import svgToDataUri from "mini-svg-data-uri";
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
-const flowbite = require("flowbite-react/tailwind");
-
+import flowbite from 'flowbite-react/tailwind'
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", flowbite.content()],
