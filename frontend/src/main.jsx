@@ -8,7 +8,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 const NODE_ENVIRONMENT = import.meta.env.VITE_NODE_ENV || "production";
 const client = new ApolloClient({
 	// TODO => Update the uri on production
-	uri: NODE_ENVIRONMENT === "development" ? "http://localhost:4000/graphql" : "https://expensy-qyjs.onrender.com/graphql", // the URL of our GraphQL server.
+	uri: NODE_ENVIRONMENT === "development" ? "http://localhost:4000/graphql" : "https://expensy-m5ee.onrender.com//graphql", // the URL of our GraphQL server.
 	cache: new InMemoryCache(), // Apollo Client uses to cache query results after fetching them.
 	credentials: "include", // This tells Apollo Client to send cookies along with every request to the server.
 });
